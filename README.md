@@ -29,10 +29,13 @@ The following additional MATLAB programs are required.
 # Definition of phase-averaged waveforms
 
 **Phase-averaged waveform** is the average of continuous signal, eg. ECoG, LFP, and background unit activity (BUA), in voltage (μV) in each bin (eg. size = 5°) of the instantaneous phase values of the band-pass filtered reference signal, eg.  ECoG band-pass filtered at 15–30 Hz (zero-phase shift Butterworth filter with the order of 3). A sample vector for an individual continuous signal is defined in the complex plane as the double of an average of complex number-based vector representations of the instantaneous phase values and the values of BUA signals of each data point, i.e. 
-$$
-V =\frac{2}{N}\sum_{k=1}^{N}r_ke^{i\varphi_k} ,
-$$
-where $\varphi_k$ and $r_k$ represent the instantaneous phase in radians and the value of the continuous signal (signed) in μV for the $k$th data point, respectively, $N$ is the number of data points, and $i$ is the imaginary unit. The average was doubled to reflect the amplitude difference between the positive and negative deflections. If the phase-averaged waveform of a signal is an ideal sinusoidal curve, the sample vector length |$V$| is identical to the peak-to-peak amplitude in μV.
+
+
+
+![eq](eq.png)
+
+
+where 𝜑*<sub>k</sub>* and   *r<sub>k</sub>* represent the instantaneous phase in radians and the value of the continuous signal (signed) in μV for the *k*th data point, respectively, *N* is the number of data points, and *i* is the imaginary unit. The average was doubled to reflect the amplitude difference between the positive and negative deflections. If the phase-averaged waveform of a signal is an ideal sinusoidal curve, the sample vector length |*V*| is identical to the peak-to-peak amplitude in μV.
 
 
 
@@ -64,14 +67,25 @@ results = K_PhaseWave(bua1L.Data,eeg1L.Data,1024,1024, b, a,...
     'histbin',72,... % Bin size for the histogram
     'plotLinear',true,...
     'plotCirc',true);
+```
+![eq](bua1.png)
 
+![eq](bua2.png)
+
+
+```matlab
 % one signal in a linear plot
 hlin = K_plotLinearPhaseWave(results,'ErrorBar','sem');
+```
+![eq](bua3sem.png)
 
+
+```matlab
 % one signal in a circular plot
 hcirc = K_plotCircPhaseWave_one(results,'Title','This is a great plot!');
 ```
 
+![eq](bua4circ.png)
 
 
 ### Group data
@@ -90,14 +104,23 @@ results(3) = K_PhaseWave(bua3L.Data,eeg3L.Data,1024,1024,b,a,...
 
 % Linear plot
 K_plotLinearPhaseWave(results)
+```
+![eq](grp1.png)
 
+
+```matlab
 % Surface plot
 K_plotLinearPhaseWave(results,'PlotType','surface')
+```
+![eq](grp2.png)
 
+
+```matlab
 % Circular plot
 K_plotCircPhaseWave_group(results)
 
 ```
+![eq](grp3.png)
 
 
 
