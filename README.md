@@ -22,133 +22,145 @@ The following additional MATLAB programs are required.
 - [**Red Blue Colormap**](https://uk.mathworks.com/matlabcentral/fileexchange/25536-red-blue-colormap) by Adam Auton
     - `redblue.m`
 
-# K_PhaseWave_demo.mlx
-
-This MATLAB Live Script
 
 
 
 
+# Definition of phase-averaged waveforms
+
+**Phase-averaged waveform** is the average of continuous signal, eg. ECoG, LFP, and background unit activity (BUA), in voltage (μV) in each bin (eg. size = 5°) of the instantaneous phase values of the band-pass filtered reference signal, eg.  ECoG band-pass filtered at 15–30 Hz (zero-phase shift Butterworth filter with the order of 3). A sample vector for an individual continuous signal is defined in the complex plane as the double of an average of complex number-based vector representations of the instantaneous phase values and the values of BUA signals of each data point, i.e. 
+$$
+V =\frac{2}{N}\sum_{k=1}^{N}r_ke^{i\varphi_k} ,
+$$
+where $\varphi_k$ and $r_k$ represent the instantaneous phase in radians and the value of the continuous signal (signed) in μV for the $k$th data point, respectively, $N$ is the number of data points, and $i$ is the imaginary unit. The average was doubled to reflect the amplitude difference between the positive and negative deflections. If the phase-averaged waveform of a signal is an ideal sinusoidal curve, the sample vector length |$V$| is identical to the peak-to-peak amplitude in μV.
 
 
 
+# Usage
 
+The MATLAB Live Script `K_PhaseWave_demo.mlx` provides example usage of `K_PhaseWave` (the main function), and accompanying plotting finctions `K_plotLinearPhaseWave`, `K_plotCircPhaseWave_one`, and `K_plotCircPhaseWave_group`.
 
-## K_PhaseWave.m
+### Prepare Butterworth bandpass filter
+```matlab
+% Prepare Butterworth bandpass filter for beta frequency (13-30 Hz) for 1024 Hz data
 
+Wn = normalizedfreq([13 30],1024); % get normalized frequency
+[b, a] = butter(3, Wn,'bandpass'); % create bandpass filter
 
+fvtool(b,a,'Fs',newRate); % for visualization
+xlim([0 5]);ylim('auto');
 
+assert(isstable(b,a)); % check if the filter is stable
 ```
-K_PhaseWave is similar to K_PhaseHist, but works for a pair of ECoG and
-LFP waveform signals. It returns values for plotting "phase-triggered
-average waveforms".
- 
-[results, handles] = K_PhaseWave(lfpwaveform,eegwaveform,sourceRate,newRate,b,a,varargin)
 
-INPUT ARGUMENTS
-    lfpwaveform  vector of source data from LFP channel
+### One data
 
-    eegwaveform  vector of source data from EEG channel (lfpwaveform &
-                 eegwaveform must have same length)
+`bua1L.Data` and `eeg1L.Data` are continuous data of BUA and ECoG, both sampled at 1024 Hz.
 
-    sourceRate   sampling rate [Hz] of the input data event and eeg
+```matlab
+results = K_PhaseWave(bua1L.Data,eeg1L.Data,1024,1024, b, a,...
+    'randomization','none',...
+    'histtype','bar',...
+    'histbin',72,... % Bin size for the histogram
+    'plotLinear',true,...
+    'plotCirc',true);
 
-    newRate      the new sampling rate [Hz] after resample
-               In many cases, 1024 is good.
+% one signal in a linear plot
+hlin = K_plotLinearPhaseWave(results,'ErrorBar','sem');
 
-    b, a         b and a as coefficients of a filter transfer function
-               b, a must be calculated for newRate rather than souceRate
-               b for numeraotr, a for denominator. You can get b and a by:
-
-               [b, a] = butter(n, Wn)
-
-               where n is the order of the Butterworth filter (lowpass), or
-               half the order(bandpass). Wn is normalized cuttoff
-               frequency, i.e. [cycles per sec] devided by Niquist
-               frequency [newRate/2].
-
-               Wn = frequencyHerz/(samplingrateHerz/2)
-
-               The following command can check the stablity of the filter
-               fvtool(b,a,'FrequencyScale','log', 'Analysis','info');
-
-
-OPTIONAL PARAMETER/VALUE PAIRS
-
-    'PlotLinear'   true | false (default)
-
-    'PlotCirc'     true | false (default)
-
-    'Histbin'      number of histogram bins (default = 72)
-
-    'HistType'     'line' (default) | 'bar'
-
-    'Randomization' 
-                 'bootstrap' (default) | 'circshift' | 'none'
-
-
-OUTPUT ARGUMENTS
-    results       Structure conttaining following fields
-
-      binmean       Mean per bin
-      binstd        SD per bin
-      binsem        SEM per bin
-      axrad         Phase axis (-pi to pi)
-
-      meanvec       Non-scalar structure with the following fields
-
-          vec       Vector represented as a complex number
-
-                      vec = mean(xy)*2, 
-
-                    where, xy = rad2cmp(x).*y, x is instantaneous phase (in
-                    radian), and y is the value of the waveform data
-                    (typically in mV), Y = rad2cmp(X) is a function defined
-                    by:
-
-                      y = exp(1i * x);
-
-                    where 1i is equivalent to 1*i, and i is the imaginary
-                    unit.
-
-
-          length   abs(vec)
-          radian   angle(vec)
-          degree   rad2deg(angle(vec))
-
-          bootstrap, circshift    
-                   These are results of shuffling by different methods
-          p_lessthan 
-                   Estimated range of P value
-          length   
-          radian
-          degree
-
-    handles        Structure of graphic handles
-
-
-
-NOTE
-What about bias correction with ecdf? How does it apply to LFP ddata?
-
-Because here we do not really create histograms of events for Rayleigh
-test, but rather create average waveforms in relation to instantaneous
-phase in essense, even if the phases are non-uniform, average will be
-computed for each bin without bias.
+% one signal in a circular plot
+hcirc = K_plotCircPhaseWave_one(results,'Title','This is a great plot!');
 ```
 
 
 
+### Group data
+
+Analyse three data and show the analysis of group data.
+
+```matlab
+results(1) = K_PhaseWave(bua1L.Data,eeg1L.Data,1024,1024,b,a,...
+    'randomization','none','HistBin',18);
+
+results(2) = K_PhaseWave(bua2L.Data,eeg2L.Data,1024,1024,b,a,...
+    'randomization','none','HistBin',18);
+
+results(3) = K_PhaseWave(bua3L.Data,eeg3L.Data,1024,1024,b,a,...
+    'randomization','none','HistBin',18)
+
+% Linear plot
+K_plotLinearPhaseWave(results)
+
+% Surface plot
+K_plotLinearPhaseWave(results,'PlotType','surface')
+
+% Circular plot
+K_plotCircPhaseWave_group(results)
+
+```
 
 
 
+### Syntax
+
+```matlab
+[results, handles] = K_PhaseWave(lfpwaveform,eegwaveform,...
+    sourceRate,newRate,b,a)
+[results, handles] = K_PhaseWave(____,'Parameter', value, ...)
+```
+
+
+
+#### Input arguments
+
+| Input arguments | Description                                                  |
+| --------------- | ------------------------------------------------------------ |
+| `lfpwaveform`   | vector of source data from LFP (EEG, BUA) channel            |
+| `eegwaveform`   | vector of source data from the reference EEG channel (`lfpwaveform` &  `eegwaveform`: must have same length) |
+| `sourceRate`    | sampling rate [Hz] of the input data event and EEG           |
+| `newRate`       | the new sampling rate [Hz] after resample. In many cases, 1024 is good. |
+| `b`, `a`        | `b` and `a` as coefficients of a filter transfer function. `b`, `a` must be calculated for `newRate` rather than `souceRate`. |
+
+ You can obtain`b` and `a` by:
+
+```matlab
+[b, a] = butter(n, Wn)
+```
+
+where `n` is the order of the Butterworth filter (lowpass), or half the order(bandpass). `Wn` is normalized cuttoff frequency, i.e. [cycles per sec] divided by Niquist frequency [newRate/2].
+
+```matlab
+Wn = frequencyHz/(samplingrateHz/2)
+```
+
+The following command can check the stablity of the filter:
+
+```matlab
+fvtool(b,a,'FrequencyScale','log', 'Analysis','info');
+```
+
+#### Optional Parameter/Value Pairs
+
+| Parameters        | Values                                  |
+| ----------------- | --------------------------------------- |
+| `'PlotLinear'`    | true \| false (default)                 |
+| `'PlotCirc'`      | true \| false (default)                 |
+| `'Histbin'`       | number of histogram bins (default = 72) |
+| `'HistType'`      | 'line' (default) \| 'bar'               |
+| `'Randomization'` | 'none' \| 'bootstrap' \| 'circshift'    |
+
+The `'Randomization'`  parameter sets the shuffling method to compute *p* values. 
+
+`'bootstrap'` uses `bootstrap` function to shuffle both the continuous signal and the instantaneous phase values if the reference signal 1000 times. This method does not maintain the shape of waveforms at all.
+
+`'circshift'` uses `circshift` function and repeat random circular shifting of the data within cycles of given oscillation, eg. beta. This method maintains the shape of the waveform while randomly shifting the instantaneous phase values. I consider this is a preferred method for shuffling.
 
 
 
 # References
 
-- Nakamura KC, Sharott A, Tanaka T, Magill PJ (2021) Input zone-selective dysrhythmia in motor thalamus after dopamine depletion. J Neurosci, ***in press***, https://doi.org/10.1523/JNEUROSCI.1753-21.2021
-- Berens P (2009) CircStat: A MATLAB toolbox for circular statistics. J Stat Softw 31:1–21, http://www.jstatsoft.org/v31/i10
+- Nakamura KC, Sharott A, Tanaka T, Magill PJ (2021) Input zone-selective dysrhythmia in motor thalamus after dopamine depletion. *J Neurosci*, ***in press***, https://doi.org/10.1523/JNEUROSCI.1753-21.2021
+- Berens P (2009) CircStat: A MATLAB toolbox for circular statistics. *J Stat Softw* 31:1–21, http://www.jstatsoft.org/v31/i10
 
 
 
@@ -161,6 +173,8 @@ MRC Brain Network Dynamics Unit, University of Oxford
 kouichi.c.nakamura@gmail.com
 
 kouichi.nakamura@ndcn.ox.ac.uk
+
+
 
 
 
