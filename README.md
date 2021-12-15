@@ -28,14 +28,11 @@ The following additional MATLAB programs are required.
 
 # Definition of phase-averaged waveforms
 
-**Phase-averaged waveform** is the average of continuous signal, eg. ECoG, LFP, and background unit activity (BUA), in voltage (μV) in each bin (eg. size = 5°) of the instantaneous phase values of the band-pass filtered reference signal, eg.  ECoG band-pass filtered at 15–30 Hz (zero-phase shift Butterworth filter with the order of 3). A sample vector for an individual continuous signal is defined in the complex plane as the double of an average of complex number-based vector representations of the instantaneous phase values and the values of BUA signals of each data point, i.e. 
-
-
+**Phase-averaged waveform** is the average of continuous signal, eg. ECoG, LFP, and background unit activity (BUA), in voltage (μV) in each bin (eg. size = 5°) of the instantaneous phase values of the band-pass filtered reference signal, eg.  ECoG band-pass filtered at 15–30 Hz (zero-phase shift Butterworth filter with the order of 3). A sample vector for an individual continuous signal is defined in the complex plane as the double of an average of complex number-based vector representations of the instantaneous phase values and the values of the continuous signal of each data point, i.e. 
 
 ![eq](eq.png)
 
-
-where 𝜑*<sub>k</sub>* and   *r<sub>k</sub>* represent the instantaneous phase in radians and the value of the continuous signal (signed) in μV for the *k*th data point, respectively, *N* is the number of data points, and *i* is the imaginary unit. The average was doubled to reflect the amplitude difference between the positive and negative deflections. If the phase-averaged waveform of a signal is an ideal sinusoidal curve, the sample vector length |*V*| is identical to the peak-to-peak amplitude in μV.
+where 𝜑<sub>*k*</sub> and   *r<sub>k</sub>* represent the instantaneous phase in radians and the value of the continuous signal (signed) in μV for the *k*th data point, respectively, *N* is the number of data points, and *i* is the imaginary unit. The average was doubled to reflect the amplitude difference between the positive and negative deflections. If the phase-averaged waveform of a signal is an ideal sinusoidal curve, the sample vector length |*V*| is identical to the peak-to-peak amplitude in μV.
 
 
 
