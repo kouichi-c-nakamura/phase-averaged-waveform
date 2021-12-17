@@ -1,5 +1,5 @@
 # phase-averaged-waveform
-MATLAB code for the phase-analysis of continuous data, including LFP, EEG and background unit activity (BUA), to show the relationship between instantaneous phase values and modulation of the continous data in either linear or circular plot.
+MATLAB code for the phase-analysis of continuous data, including EEG, ECoG, LFP and background unit activity (BUA), to show the relationship between instantaneous phase values and modulation of the continous data in either linear or circular plot.
 
 `K_PhaseWave`, `K_plotCircPhaseHist_one` was used to create the **phase-averaged waveform** plots in **Figures 7–9** of [Nakamura et al., (2021)](https://doi.org/10.1523/JNEUROSCI.1753-21.2021) for the phase analysis of continuous BUA data. 
 
