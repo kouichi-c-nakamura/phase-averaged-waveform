@@ -179,7 +179,7 @@ The `'Randomization'`  parameter sets the shuffling method to compute *p* values
 
 # References
 
-- Nakamura KC, Sharott A, Tanaka T, Magill PJ (2021) Input zone-selective dysrhythmia in motor thalamus after dopamine depletion. *J Neurosci*, ***in press***, https://doi.org/10.1523/JNEUROSCI.1753-21.2021
+- Nakamura KC, Sharott A, Tanaka T, Magill PJ (2021) Input zone-selective dysrhythmia in motor thalamus after dopamine depletion. J Neurosci 41:10382–10404. https://doi.org/10.1523/JNEUROSCI.1753-21.2021
 - Berens P (2009) CircStat: A MATLAB toolbox for circular statistics. *J Stat Softw* 31:1–21, http://www.jstatsoft.org/v31/i10
 
 
